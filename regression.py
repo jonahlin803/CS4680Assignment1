@@ -1,7 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import pandas as pd
 
@@ -34,31 +34,36 @@ lin = LinearRegression()
 lin.fit(X_train_scaled, y_train)
 y_pred_lin = lin.predict(X_test_scaled)
 
-print("[Linear Regression]")
+# Polynomial Regression (degree=2) with scaling inside a pipeline
+poly2 = Pipeline([
+	("scaler", StandardScaler()),
+	("poly", PolynomialFeatures(degree=2, include_bias=False)),
+	("lin", LinearRegression()),
+])
+poly2.fit(X_train, y_train)
+y_pred_poly2 = poly2.predict(X_test)
+
+# Example predictions first (first 5 rows)
+show_n = min(5, len(y_test))
+print("Example predictions (first 5 rows of test set):")
+for i in range(show_n):
+	print(
+		f"{i+1}) Actual: {y_test.iloc[i]:.1f} | Linear: {y_pred_lin[i]:.1f} | Polynomial(d=2): {y_pred_poly2[i]:.1f}"
+	)
+
+# Then metrics
+print("\n[Linear Regression]")
 print(f"MSE: {mean_squared_error(y_test, y_pred_lin):.4f}")
 print(f"MAE: {mean_absolute_error(y_test, y_pred_lin):.4f}")
 print(f"R^2: {r2_score(y_test, y_pred_lin):.4f}")
 
-# Random Forest Regression (no scaling needed)
-rf = RandomForestRegressor(n_estimators=200, random_state=42)
-rf.fit(X_train, y_train)
-y_pred_rf = rf.predict(X_test)
-
-print("\n[Random Forest Regression]")
-print(f"MSE: {mean_squared_error(y_test, y_pred_rf):.4f}")
-print(f"MAE: {mean_absolute_error(y_test, y_pred_rf):.4f}")
-print(f"R^2: {r2_score(y_test, y_pred_rf):.4f}")
+print("\n[Polynomial Regression (degree=2)]")
+print(f"MSE: {mean_squared_error(y_test, y_pred_poly2):.4f}")
+print(f"MAE: {mean_absolute_error(y_test, y_pred_poly2):.4f}")
+print(f"R^2: {r2_score(y_test, y_pred_poly2):.4f}")
 
 # Quick comparison
 r2_lin = r2_score(y_test, y_pred_lin)
-r2_rf = r2_score(y_test, y_pred_rf)
-best = "Linear Regression" if r2_lin >= r2_rf else "Random Forest Regression"
+r2_poly2 = r2_score(y_test, y_pred_poly2)
+best = "Linear Regression" if r2_lin >= r2_poly2 else "Polynomial Regression (degree=2)"
 print(f"\nBest by R^2: {best}")
-
-# Example predictions (first 5 rows)
-show_n = min(5, len(y_test))
-print("\nExample predictions (first 5 rows of test set):")
-for i in range(show_n):
-	print(
-		f"{i+1}) Actual: {y_test.iloc[i]:.1f} | LinReg: {y_pred_lin[i]:.1f} | RF: {y_pred_rf[i]:.1f}"
-	)

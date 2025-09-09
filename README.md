@@ -1,1 +1,1 @@
-# CS4680Assignment1
+# CS4680 Assignment 1 - Machine Learning Exercise

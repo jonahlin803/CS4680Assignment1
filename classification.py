@@ -17,7 +17,8 @@ feature_cols = [
 	"Tutoring_Sessions",
 ]
 X = df[feature_cols]
-y = df["Access_to_Resources"]  # categorical target: High/Medium/Low
+# Target: Motivation_Level (categorical: Low/Medium/High)
+y = df["Motivation_Level"]
 
 # Train/test split (stratify to preserve class balance)
 X_train, X_test, y_train, y_test = train_test_split(
@@ -29,17 +30,19 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# Train SVM classifier
-model = svm.SVC(kernel="rbf", random_state=42)
+# Train SVM classifier (handle class imbalance)
+model = svm.SVC(kernel="rbf", class_weight="balanced", random_state=42)
 model.fit(X_train_scaled, y_train)
 
-# Evaluate
+# Predictions
 y_pred = model.predict(X_test_scaled)
-print(f"Accuracy: {accuracy_score(y_test, y_pred):.4f}")
-print("Classification Report:\n" + classification_report(y_test, y_pred))
 
-# Example outputs: show first 5 predictions vs actual
+# Example outputs first: show first 5 predictions vs actual
 to_show = min(5, len(y_test))
 print("Example predictions (first 5):")
 for i in range(to_show):
 	print(f"{i+1}) Actual: {y_test.iloc[i]}, Predicted: {y_pred[i]}")
+
+# Then metrics
+print(f"\nAccuracy: {accuracy_score(y_test, y_pred):.4f}")
+print("Classification Report:\n" + classification_report(y_test, y_pred, zero_division=0))
