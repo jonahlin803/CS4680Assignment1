@@ -43,12 +43,15 @@ poly2 = Pipeline([
 poly2.fit(X_train, y_train)
 y_pred_poly2 = poly2.predict(X_test)
 
-# Example predictions first (first 5 rows)
+# Example predictions first (5 random rows from test set)
+import numpy as np
+np.random.seed(42)  # For reproducible random selection
 show_n = min(5, len(y_test))
-print("Example predictions (first 5 rows of test set):")
-for i in range(show_n):
+random_indices = np.random.choice(len(y_test), size=show_n, replace=False)
+print("Example predictions (5 random rows from test set):")
+for i, idx in enumerate(random_indices):
 	print(
-		f"{i+1}) Actual: {y_test.iloc[i]:.1f} | Linear: {y_pred_lin[i]:.1f} | Polynomial(d=2): {y_pred_poly2[i]:.1f}"
+		f"{i+1}) Actual: {y_test.iloc[idx]:.1f} | Linear: {y_pred_lin[idx]:.1f} | Polynomial(d=2): {y_pred_poly2[idx]:.1f}"
 	)
 
 # Then metrics
