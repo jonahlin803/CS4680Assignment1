@@ -1,4 +1,4 @@
-# CS4680 Assignment 1 — Regression Model Comparison
+# CS4680 Assignment 1 - Regression Model Comparison
 
 ## Problem Statement
 The goal of this assignment is to predict **student exam performance** using regression analysis. We use the dataset `StudentPerformanceFactors.csv`, which contains features related to study habits, attendance, and prior academic history.
